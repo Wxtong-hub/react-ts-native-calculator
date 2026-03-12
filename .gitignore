@@ -1,0 +1,15 @@
+*.exe
+*.out
+*.o
+*.obj
+*.dll
+*.a
+*.lib
+*.log
+*.tmp
+
+calc_server.err.log
+calc_server.out.log
+
+.DS_Store
+Thumbs.db

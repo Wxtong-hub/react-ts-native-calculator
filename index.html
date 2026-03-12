@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端学习起步页</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --paper: rgba(255, 251, 245, 0.88);
+      --ink: #1f2a34;
+      --muted: #5f6b76;
+      --line: rgba(31, 42, 52, 0.12);
+      --accent: #cc5a2c;
+      --accent-2: #1b7f79;
+      --accent-3: #f0c04f;
+      --shadow: 0 22px 50px rgba(42, 37, 30, 0.12);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(240, 192, 79, 0.45), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(27, 127, 121, 0.28), transparent 30%),
+        linear-gradient(135deg, #f8f2e8 0%, #f3e6d3 100%);
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 8px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      padding: 36px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(204, 90, 44, 0.14);
+      filter: blur(10px);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(27, 127, 121, 0.12);
+      color: var(--accent-2);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1;
+      margin-top: 16px;
+      max-width: 9ch;
+    }
+
+    .hero p {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      margin: 18px 0 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 22px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(31, 42, 52, 0.14);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff8f2;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid rgba(31, 42, 52, 0.18);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .card {
+      grid-column: span 4;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      transform: translateY(24px);
+      opacity: 0;
+      animation: float-in 0.7s ease forwards;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    .card:nth-child(3) {
+      animation-delay: 0.24s;
+    }
+
+    .card-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .mark-html {
+      background: linear-gradient(135deg, #d1491d, #f08a47);
+    }
+
+    .mark-css {
+      background: linear-gradient(135deg, #1a7caa, #4ab9b0);
+    }
+
+    .mark-js {
+      background: linear-gradient(135deg, #c79b14, #f0c04f);
+      color: #3d2f00;
+    }
+
+    .card p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 12px 0 0;
+    }
+
+    .code-lab,
+    .checklist {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.7;
+    }
+
+    .lab-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .snippet {
+      background: #1f2530;
+      color: #f3efe8;
+      border-radius: 20px;
+      padding: 20px;
+      overflow: auto;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      min-height: 280px;
+    }
+
+    .snippet .tag {
+      color: #f0c04f;
+    }
+
+    .snippet .attr {
+      color: #7ad4cf;
+    }
+
+    .snippet .value {
+      color: #ffb37a;
+    }
+
+    .preview {
+      border-radius: 20px;
+      padding: 22px;
+      background: linear-gradient(180deg, #fffdf8, #f2eee6);
+      border: 1px dashed rgba(31, 42, 52, 0.18);
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .demo-box {
+      background: linear-gradient(135deg, rgba(204, 90, 44, 0.16), rgba(27, 127, 121, 0.14));
+      border: 1px solid rgba(31, 42, 52, 0.12);
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .preview button {
+      align-self: flex-start;
+      border: none;
+      background: var(--accent-2);
+      color: white;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .checklist ul {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .checklist li {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(31, 42, 52, 0.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .pill {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .pill.easy {
+      background: rgba(27, 127, 121, 0.14);
+      color: var(--accent-2);
+    }
+
+    .pill.medium {
+      background: rgba(240, 192, 79, 0.22);
+      color: #7a5600;
+    }
+
+    .pill.keep {
+      background: rgba(204, 90, 44, 0.14);
+      color: var(--accent);
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: rgba(204, 90, 44, 0.08);
+      border-radius: 0 16px 16px 0;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes float-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 920px) {
+      .card {
+        grid-column: span 12;
+      }
+
+      .lab-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 20px;
+      }
+
+      .hero,
+      .card,
+      .code-lab,
+      .checklist {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        max-width: 100%;
+      }
+
+      .section-head {
+        flex-direction: column;
+      }
+
+      .checklist li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="eyebrow">Frontend Starter</span>
+      <h1>前端学习，从会看页面开始</h1>
+      <p>
+        这是一个适合入门的静态学习页。你可以先理解页面结构，再观察样式怎么改变视觉效果，最后用一点 JavaScript
+        给页面加交互。前端的核心就是这三部分一起工作。
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="focusBtn">显示今日学习重点</button>
+        <button class="btn btn-secondary" id="toggleBtn">切换学习提示</button>
+      </div>
+      <div class="note hidden" id="studyNote">
+        建议顺序：先学 HTML 语义标签，再学 CSS 盒模型与布局，最后学 JavaScript 如何选中元素并响应点击事件。
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="card-mark mark-html">H</div>
+        <h2>HTML 负责结构</h2>
+        <p>
+          HTML 决定页面里有什么内容，比如标题、段落、按钮、图片和列表。它像房子的骨架，让浏览器知道每一块内容是什么。
+        </p>
+      </article>
+      <article class="card">
+        <div class="card-mark mark-css">C</div>
+        <h2>CSS 负责样式</h2>
+        <p>
+          CSS 决定页面看起来怎样，比如颜色、间距、排版、圆角和动画。没有 CSS，网页通常能用，但几乎没有视觉设计。
+        </p>
+      </article>
+      <article class="card">
+        <div class="card-mark mark-js">JS</div>
+        <h2>JavaScript 负责交互</h2>
+        <p>
+          JavaScript 让页面动起来。点击按钮、展开说明、切换主题、提交表单验证，通常都需要 JavaScript 参与。
+        </p>
+      </article>
+    </section>
+
+    <section class="code-lab">
+      <div class="section-head">
+        <div>
+          <h2>一个最小网页例子</h2>
+          <p>左边是代码，右边是它渲染出来的大致效果。先看结构，再看样式，再想交互从哪里接进去。</p>
+        </div>
+      </div>
+      <div class="lab-layout">
+        <pre class="snippet"><code><span class="tag">&lt;section</span> <span class="attr">class</span>=<span class="value">"demo-box"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>你好，前端<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;p&gt;</span>这是一个练习区块。<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;button&gt;</span>点我试试<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/section&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+  .demo-box {
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff4ea;
+  }
+<span class="tag">&lt;/style&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+  button.onclick = () =&gt; alert("开始学习");
+<span class="tag">&lt;/script&gt;</span></code></pre>
+
+        <div class="preview">
+          <div>
+            <h3>你好，前端</h3>
+            <p>这是一个练习区块。结构、样式、交互已经各自分工。</p>
+            <div class="demo-box">
+              <strong>观察点：</strong>
+              <p>标题来自 HTML，颜色与留白来自 CSS，点击行为来自 JavaScript。</p>
+            </div>
+          </div>
+          <button id="demoBtn">点我试试</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="checklist">
+      <div class="section-head">
+        <div>
+          <h2>入门学习清单</h2>
+          <p>下面这几个主题适合作为第一周练习。完成后，你就能自己写简单静态页面了。</p>
+        </div>
+      </div>
+      <ul>
+        <li>
+          <span>认识常见 HTML 标签：`h1`、`p`、`a`、`img`、`button`、`div`</span>
+          <span class="pill easy">先学</span>
+        </li>
+        <li>
+          <span>理解 CSS 选择器、盒模型、`margin`、`padding`、`display`</span>
+          <span class="pill medium">重点</span>
+        </li>
+        <li>
+          <span>学习 JavaScript 基础：变量、函数、事件、DOM 选择</span>
+          <span class="pill medium">重点</span>
+        </li>
+        <li>
+          <span>反复练习：模仿一个简单网页，把它拆成结构、样式、交互三层</span>
+          <span class="pill keep">持续做</span>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const studyNote = document.getElementById("studyNote");
+    const focusBtn = document.getElementById("focusBtn");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const demoBtn = document.getElementById("demoBtn");
+
+    focusBtn.addEventListener("click", () => {
+      studyNote.classList.remove("hidden");
+      studyNote.textContent = "今日学习重点：HTML 语义标签、CSS 盒模型、JavaScript 点击事件。";
+    });
+
+    toggleBtn.addEventListener("click", () => {
+      studyNote.classList.toggle("hidden");
+      if (!studyNote.classList.contains("hidden")) {
+        studyNote.textContent = "提示：看网页时多用浏览器开发者工具，边改边学会更快。";
+      }
+    });
+
+    demoBtn.addEventListener("click", () => {
+      demoBtn.textContent = "你已经触发了交互";
+      demoBtn.style.background = "#cc5a2c";
+    });
+  </script>
+</body>
+</html>

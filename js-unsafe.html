@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>科普：为什么 JavaScript 容易出问题？</title>
+  <style>
+    :root {
+      --bg: #f5f8ff;
+      --card: #ffffff;
+      --text: #111e3c;
+      --muted: #4e5a77;
+      --primary: #2b6fff;
+      --line: #d9e2ff;
+      --good: #0f9d58;
+      --warn: #e89f18;
+      --bad: #d64545;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, #d8e5ff 0, transparent 45%),
+        radial-gradient(circle at 90% 0%, #e8dcff 0, transparent 40%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 36px auto;
+      padding: 0 20px;
+    }
+    .hero {
+      background: linear-gradient(120deg, #ffffffbf, #eaf0ffbf);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 32px; }
+    .hero p { margin: 8px 0; color: var(--muted); }
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin: 16px 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 10px 24px rgba(16, 35, 87, 0.08);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+    }
+    .tag {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 12px;
+      color: var(--primary);
+      background: #dce7ff;
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+    ul { margin: 0.5em 0 0 1.3em; }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #eef3ff;
+      padding: 0 6px;
+      border-radius: 4px;
+    }
+    .timeline {
+      margin: 18px 0;
+      border-left: 3px solid var(--line);
+      padding-left: 16px;
+    }
+    .timeline p {
+      margin: 0 0 12px;
+      position: relative;
+    }
+    .timeline p::before {
+      content: "";
+      position: absolute;
+      left: -22px;
+      top: 8px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .faq {
+      margin-top: 12px;
+    }
+    .q {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #f3f7ff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .25s ease;
+      padding: 0 12px;
+      color: var(--muted);
+      border-left: 2px solid var(--line);
+      margin-left: 4px;
+    }
+    .a.open {
+      max-height: 220px;
+      padding: 10px 12px 0;
+      margin-bottom: 8px;
+    }
+    .fact {
+      border-left: 4px solid;
+      padding: 8px 12px;
+      margin: 10px 0;
+      background: #fcfdff;
+    }
+    .fact.good { border-left-color: var(--good); }
+    .fact.warn { border-left-color: var(--warn); }
+    .fact.bad { border-left-color: var(--bad); }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .badge {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    footer {
+      color: var(--muted);
+      padding: 20px 0 4px;
+      font-size: 13px;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p>前端科普 · 类型安全 + 语言机制</p>
+      <h1>为什么 JavaScript 常被说“不安全”？</h1>
+      <p>先说结论：<strong>问题更多来自“边界更大 + 运行时约束更少 + 输入不可控”</strong>，不是它天生“邪恶”。</p>
+      <div class="badges">
+        <span class="badge">动态类型</span>
+        <span class="badge">隐式转换</span>
+        <span class="badge">浏览器输入来源复杂</span>
+        <span class="badge">供应链和依赖风险</span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">核心原因</span>
+        <h3>它为什么容易出错</h3>
+        <ul>
+          <li><strong>动态类型 + 弱类型</strong>：`"1" + 2` 会变成字符串拼接，`1 + true` 变 `2`。</li>
+          <li><strong>运行时才报错</strong>：很多错误不是在编写时发现，而是用户触发某条路径时才出现。</li>
+          <li><strong>运行环境很开放</strong>：浏览器里 JS 能直接和 DOM、网络、Cookie、Storage 交互，容易连带业务漏洞。</li>
+          <li><strong>攻击面大</strong>：输入来源广（URL、表单、第三方 SDK、浏览器扩展、历史遗留 API）。</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <span class="tag">安全误区</span>
+        <h3>不是“天生不安全”</h3>
+        <ul>
+          <li>C++、Python、JavaScript、Go 同样能写不安全程序；安全与否取决于使用方式。</li>
+          <li>真正高危点是“错误地信任输入”和“缺少边界校验”。</li>
+          <li>同一语法能做很安全的应用，也能做出高危漏洞（XSS/注入/权限绕过）。</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <span class="tag">“Java”关系</span>
+        <h3>和 Java 有关系吗？</h3>
+        <ul>
+          <li><strong>名字关系很明显，技术关系不深。</strong>早期为了市场化，JavaScript 名称借用了 Java 的热度。</li>
+          <li>设计血缘主要来自 <code>Self</code>、<code>Scheme</code>、<code>Java</code>语法影响（更像语法“借用”而非内核复用）。</li>
+          <li>Java 是强类型、编译期检查更多、运行时类型更严格；JavaScript 是脚本语言，灵活更高但越界错误更容易发生。</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h3>它是怎么产生的？（简史）</h3>
+      <div class="timeline">
+        <p><strong>1995</strong>：网景（Netscape）用 10 天左右实现第一版脚本语言，初名 <strong>Mocha / LiveScript</strong>。</p>
+        <p><strong>1995 下半年</strong>：为了赶时髦、蹭热度，改名为 <strong>JavaScript</strong>。</p>
+        <p><strong>1996</strong>：提交给 ECMA，形成标准化版本 ECMAScript。</p>
+        <p><strong>1997 到 现在</strong>：反复迭代，逐步引入模块、类、模块化、严格模式、Promise、Proxy、BigInt 等。</p>
+      </div>
+      <p class="fact warn">因为出现得早（互联网初期）且要兼容大量历史网页，生态里积累了“兼容旧行为”的惯性，这也是很多边界问题长期存在的原因。</p>
+    </section>
+
+    <section class="card">
+      <h3>常见“类型安全”误区（示例）</h3>
+      <div class="faq">
+        <button class="q">1) 认为 `==` 足够比较</button>
+        <div class="a"><p>会触发隐式转换，`"0" == 0`、`"" == false` 等可能改变逻辑分支。生产环境应默认用 <code>===</code> 并显式转换。</p></div>
+
+        <button class="q">2) 直接信任接口返回结构</button>
+        <div class="a"><p>接口可能返回 <code>null</code>、字符串、对象缺字段。应先做 schema 校验（如 zod）、再进入核心逻辑。</p></div>
+
+        <button class="q">3) DOM 直接拼接到 innerHTML</button>
+        <div class="a"><p>未净化内容会引发 XSS。若要插入文本，优先用 <code>textContent</code>，HTML 必须经过严格清洗。</p></div>
+
+        <button class="q">4) 忽略执行环境差异</button>
+        <div class="a"><p>不同浏览器/Node 版本下对象原型、全局对象、内置 API 行为可能有差异，导致不可预期路径。加 lint + 严格构建和兼容检查。</p></div>
+
+        <button class="q">5) 以为 JS 本身安全特性足够</button>
+        <div class="a"><p>要结合 CSP、CORS、Samesite、CSRF Token、CSP Nonce、Trusted Types、依赖锁定和供应链扫描。</p></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>更安全的开发建议（实操）</h3>
+      <div class="fact good">1. 使用 TypeScript（`strict`）提高静态类型约束。</div>
+      <div class="fact good">2. 对外部输入做 schema 校验：URL、请求体、第三方回调都需白名单约束。</div>
+      <div class="fact good">3. 用 ESLint + 安全规则集（如推荐规则）+ Prettier 统一风格。</div>
+      <div class="fact good">4. 开启 CSP，禁用不必要的 `unsafe-inline` / `unsafe-eval`。</div>
+      <div class="fact good">5. Node 场景限制权限，减少 `eval`、`exec`，命令注入用参数化 API。</div>
+      <div class="fact good">6. 依赖库锁版本，定期更新，配合安全扫描（SCA）。</div>
+    </section>
+
+    <footer>提示：你可以把这份页面直接拖到浏览器里打开，作为“JS 不是天生不安全，但默认更容易写出危险代码”的课堂资料页使用。</footer>
+  </div>
+
+  <script>
+    const btns = document.querySelectorAll(".q");
+    btns.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        const ans = btn.nextElementSibling;
+        const open = ans.classList.contains("open");
+        document.querySelectorAll(".a.open").forEach(x => {
+          if (x !== ans) x.classList.remove("open");
+        });
+        ans.classList.toggle("open", !open);
+      });
+    });
+  </script>
+</body>
+</html>
